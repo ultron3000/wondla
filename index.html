@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>WondLa | Apple TV+ Original Series</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Stream all episodes of WondLa Seasons 1 & 2, the breathtaking Apple TV+ animated series based on Tony DiTerlizzi's books.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to bottom, #000000, #1a1a2e);
+      min-height: 100vh;
+    }
+    .episode-card:hover .play-icon {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1.1);
+    }
+    .gradient-text {
+      background: linear-gradient(90deg, #ff2d75 0%, #7e5bff 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .modal-enter {
+      animation: modalEnter 0.3s ease-out forwards;
+    }
+    @keyframes modalEnter {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+    .showcase-header {
+      background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%), 
+                  url('https://assets.apple.com/v/apple-tv-plus/shows/wondla/season-1/images/show-home-graphic-header/medium.jpg') no-repeat center center;
+      background-size: cover;
+      height: 70vh;
+      min-height: 500px;
+      display: flex;
+      flex-direction: column;
+    }
+    .apple-logo {
+      background: linear-gradient(to right, #A2AAAD, #FAFBFB);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="showcase-header">
+    <header class="bg-gradient-to-b from-black to-transparent py-4 px-6">
+      <div class="container mx-auto flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+          <div class="w-10 h-10 bg-gradient-to-r from-[#ff2d75] to-[#7e5bff] rounded-full flex items-center justify-center">
+            <i class="fas fa-play text-white"></i>
+          </div>
+          <h1 class="text-xl font-bold apple-logo">WondLa<span class="text-white">+</span></h1>
+        </div>
+        <nav class="hidden md:flex space-x-6">
+          <a href="#" class="text-white hover:text-purple-300 transition">Home</a>
+          <a href="#" class="text-white hover:text-purple-300 transition">Episodes</a>
+          <a href="#" class="text-white hover:text-purple-300 transition">Characters</a>
+          <a href="#" class="text-white hover:text-purple-300 transition">Gallery</a>
+        </nav>
+        <button class="md:hidden text-2xl text-white">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+    </header>
+
+    <div class="container mx-auto px-4 flex-1 flex items-center">
+      <div class="max-w-4xl">
+        <h1 class="text-5xl md:text-6xl font-bold mb-4 gradient-text">WondLa</h1>
+        <div class="flex items-center space-x-4 mb-6">
+          <span class="bg-gradient-to-r from-[#ff2d75] to-[#7e5bff] text-white px-3 py-1 rounded-full text-sm font-semibold">Seasons 1 & 2</span>
+          <span class="text-gray-400">2024</span>
+          <span class="text-gray-400">•</span>
+          <span class="text-gray-400">14 Episodes</span>
+        </div>
+        <p class="text-lg text-gray-300 mb-6">
+          Follow Eva Nine, a young human girl raised underground by a robot, as she emerges to discover the alien world of Orbona. 
+          With her companions Rovender Kitt and the robot Muthr, Eva embarks on an epic journey to uncover the truth about her origins 
+          and the mysterious WondLa.
+        </p>
+        <div class="flex space-x-4">
+          <button class="bg-gradient-to-r from-[#ff2d75] to-[#7e5bff] hover:from-[#e5276a] hover:to-[#6d4de8] text-white font-semibold py-3 px-8 rounded-full flex items-center transition transform hover:scale-105">
+            <i class="fas fa-play mr-2"></i> Play All
+          </button>
+          <button class="bg-gray-800 hover:bg-gray-700 text-white font-semibold py-3 px-8 rounded-full flex items-center transition">
+            <i class="fas fa-plus mr-2"></i> My List
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main class="container mx-auto px-4 pb-16">
+    <div class="flex justify-between items-center mb-8">
+      <h2 class="text-3xl font-bold flex items-center">
+        <span class="mr-4">Episodes</span>
+        <span class="text-purple-300 text-xl">Seasons 1 & 2</span>
+      </h2>
+      <div class="flex space-x-2">
+        <button class="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-full text-sm">Season 1</button>
+        <button class="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-full text-sm">Season 2</button>
+      </div>
+    </div>
+    
+    <div id="episodes" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+  </main>
+
+  <!-- Modal -->
+  <div id="playback-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-90">
+    <div class="relative w-full max-w-4xl bg-gray-900 rounded-xl overflow-hidden modal-enter">
+      <button id="close-modal" class="absolute top-4 right-4 z-50 text-white hover:text-purple-300 text-2xl transition">
+        <i class="fas fa-times"></i>
+      </button>
+      <div class="aspect-w-16 aspect-h-9">
+        <video id="modal-video" class="w-full" controls poster="https://assets.apple.com/v/apple-tv-plus/shows/wondla/season-1/images/show-home-graphic-header/medium.jpg"></video>
+      </div>
+      <div class="p-6">
+        <div class="flex justify-between items-start mb-4">
+          <div>
+            <h3 id="modal-title" class="text-2xl font-bold mb-1"></h3>
+            <div class="text-gray-400 text-sm">
+              <span>S<span id="season-num">1</span> • E<span id="episode-num"></span></span> • 45 min • <span class="text-purple-300">★ 9.1/10</span>
+            </div>
+          </div>
+          <div class="flex space-x-3">
+            <button class="text-gray-400 hover:text-white transition">
+              <i class="fas fa-share-alt"></i>
+            </button>
+            <button class="text-gray-400 hover:text-white transition">
+              <i class="fas fa-ellipsis-h"></i>
+            </button>
+          </div>
+        </div>
+        <p id="modal-description" class="text-gray-300 mb-6"></p>
+        <div class="flex space-x-4">
+          <button class="bg-gradient-to-r from-[#ff2d75] to-[#7e5bff] hover:from-[#e5276a] hover:to-[#6d4de8] text-white font-semibold py-3 px-8 rounded-full flex items-center transition transform hover:scale-105">
+            <i class="fas fa-play mr-2"></i> Play
+          </button>
+          <button class="bg-gray-800 hover:bg-gray-700 text-white font-semibold py-3 px-8 rounded-full flex items-center transition">
+            <i class="fas fa-plus mr-2"></i> Watchlist
+          </button>
+          <button class="bg-gray-800 hover:bg-gray-700 text-white font-semibold py-3 px-4 rounded-full transition">
+            <i class="fas fa-thumbs-up"></i>
+          </button>
+        </div>
+        <div class="mt-6 pt-6 border-t border-gray-800">
+          <h4 class="text-sm font-semibold text-gray-400 mb-2">Starring</h4>
+          <p class="text-gray-300 text-sm">Jeanine Mason, Alan Tudyk, Brad Garrett, Gary Anthony Williams</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="bg-gray-900 py-12">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-6 md:mb-0">
+          <div class="flex items-center space-x-2 mb-4">
+            <div class="w-10 h-10 bg-gradient-to-r from-[#ff2d75] to-[#7e5bff] rounded-full flex items-center justify-center">
+              <i class="fas fa-play text-white"></i>
+            </div>
+            <h1 class="text-xl font-bold apple-logo">WondLa<span class="text-white">+</span></h1>
+          </div>
+          <p class="text-gray-400 text-sm">© 2024 Apple TV+ Original Series</p>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div>
+            <h3 class="text-gray-300 font-semibold mb-3">Navigation</h3>
+            <ul class="space-y-2">
+              <li><a href="#" class="text-gray-400 hover:text-purple-300 text-sm transition">Home</a></li>
+              <li><a href="#" class="text-gray-400 hover:text-purple-300 text-sm transition">Episodes</a></li>
+              <li><a href="#" class="text-gray-400 hover:text-purple-300 text-sm transition">Characters</a></li>
+              <li><a href="#" class="text-gray-400 hover:text-purple-300 text-sm transition">Gallery</a></li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-gray-300 font-semibold mb-3">Legal</h3>
+            <ul class="space-y-2">
+              <li><a href="#" class="text-gray-400 hover:text-purple-300 text-sm transition">Terms</a></li>
+              <li><a href="#" class="text-gray-400 hover:text-purple-300 text-sm transition">Privacy</a></li>
+              <li><a href="#" class="text-gray-400 hover:text-purple-300 text-sm transition">Cookies</a></li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-gray-300 font-semibold mb-3">Social</h3>
+            <div class="flex space-x-4">
+              <a href="#" class="text-gray-400 hover:text-purple-300 transition"><i class="fab fa-twitter"></i></a>
+              <a href="#" class="text-gray-400 hover:text-purple-300 transition"><i class="fab fa-instagram"></i></a>
+              <a href="#" class="text-gray-400 hover:text-purple-300 transition"><i class="fab fa-facebook"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const episodes = [
+      // Season 1
+      { 
+        title: "Doors", 
+        season: 1,
+        episode: 1,
+        year: 2024,
+        video: "https://example.com/wondla/s1e1", 
+        image: "https://m.media-amazon.com/images/S/pv-target-images/df9d65a374a436b71648a8c844aa352a3d677a5436e362023af0e62bbb13a12e._BR-6_AC_SX720_FMwebp_.jpg",
+        runtime: "45 min",
+        rating: "9.0/10",
+        description: "An intruder attacks Sanctuary 573, forcing Eva above ground. Alone, she relies on her survival skills and a cryptic note labeled “WondLa.”",
+        director: "Tom Bancroft",
+        cast: "Jeanine Mason, Alan Tudyk, Brad Garrett"
+      },
+      { 
+        title: "Lifeforms", 
+        season: 1,
+        episode: 2,
+        year: 2024,
+        video: "https://example.com/wondla/s1e2", 
+        image: "https://m.media-amazon.com/images/S/pv-target-images/c020719c46943c6ef124eba57d1e518c6a3264454c8f6bd876961ddf5b6f98b0._BR-6_AC_SX720_FMwebp_.jpg",
+        runtime: "45 min",
+        rating: "8.9/10",
+        description: "Eva discovers she’s on a planet called Orbona, where she meets a telepathic water bear named Otto and a surly alien named Rovender.",
+        director: "Tom Bancroft",
+        cast: "Jeanine Mason, Alan Tudyk, Gary Anthony Williams"
+      },
+      { 
+        title: "Bargain", 
+        season: 1,
+        episode: 3,
+        year: 2024,
+        video: "https://example.com/wondla/s1e3", 
+        image: "https://m.media-amazon.com/images/S/pv-target-images/4d15fe3179cc07df205c593d95785e3e04b93206058b95d39768e024972fad31._BR-6_AC_SX720_FMwebp_.jpg",
+        runtime: "45 min",
+        rating: "9.1/10",
+        description: "Eva discovers she’s on a planet called Orbona, where she meets a telepathic water bear named Otto and a surly alien named Rovender.",
+        director: "Tom Bancroft",
+        cast: "Jeanine Mason, Alan Tudyk, Gary Anthony Williams"
+      },
+      { 
+        title: "Ghosts", 
+        season: 1,
+        episode: 4,
+        year: 2024,
+        video: "https://example.com/wondla/s1e4", 
+        image: "https://m.media-amazon.com/images/S/pv-target-images/b382da394b710a5c2ed31828a54ab07c9e6701f6ae9ca15ac974e5b4fb7f0feb._BR-6_AC_SX720_FMwebp_.jpg",
+        runtime: "45 min",
+        rating: "9.3/10",
+        description: "Eva visits a sage and learns a grim fact about humans. Undeterred, she doubles down on her quest as Besteel the bounty hunter closes in.",
+        director: "Tom Bancroft",
+        cast: "Jeanine Mason, Alan Tudyk, Brad Garrett"
+      },
+      { 
+        title: "Captive", 
+        season: 1,
+        episode: 5,
+        year: 2024,
+        video: "https://example.com/wondla/s1e5", 
+        image: "https://m.media-amazon.com/images/S/pv-target-images/72d81aedd78ea05623001edef5d913934c3a0f0810a10aa081065eaeb98d85d7._BR-6_AC_SX720_FMwebp_.jpg",
+        runtime: "45 min",
+        rating: "9.2/10",
+        description: "Despite Muthr’s protests, Eva follows through on a daring plan and forms a friendship with an unlikely ally.",
+        director: "Tom Bancroft",
+        cast: "Jeanine Mason, Alan Tudyk, Gary Anthony Williams"
+      },
+      { 
+        title: "Bridge", 
+        season: 1,
+        episode: 6,
+        year: 2024,
+        video: "https://example.com/wondla/s1e6", 
+        image: "https://m.media-amazon.com/images/S/pv-target-images/2b457b89bad2479fc676314aa2a118cc20d378694df583cd8425416fd3f94f05._BR-6_AC_SX720_FMwebp_.jpg",
+        runtime: "45 min",
+        rating: "9.5/10",
+        description: "With a possible human civilization finally in sight, Eva and her friends face their most dangerous mission yet.",
+        director: "Tom Bancroft",
+        cast: "Jeanine Mason, Alan Tudyk, Brad Garrett, Gary Anthony Williams"
+      },
+      { 
+        title: "Ruins", 
+        season: 1,
+        episode: 7,
+        year: 2024,
+        video: "https://example.com/wondla/s1e6", 
+        image: "https://m.media-amazon.com/images/S/pv-target-images/61f0b6d4931e212586f2a720f0cb38bba2e8a555fe8367f8defa8fc1b3175db6._BR-6_AC_SX720_FMwebp_.jpg",
+        runtime: "45 min",
+        rating: "9.5/10",
+        description: "In the season finale, Eva must rally both humans and aliens to defend Orbona against Queen Ojo's forces and uncover the ultimate secret of WondLa.",
+        director: "Tom Bancroft",
+        cast: "Jeanine Mason, Alan Tudyk, Brad Garrett, Gary Anthony Williams"
+      },
+      // Season 2
+      { 
+        title: "Home", 
+        season: 2,
+        episode: 1,
+        year: 2024,
+        video: "https://example.com/wondla/s2e1", 
+        image: "https://m.media-amazon.com/images/S/pv-target-images/eb96e99f73465d4fcc97a1f36139e8a6e96b36e6a6e18b69bd9cfb5d2df81c43._BR-6_AC_SX720_FMwebp_.jpg",
+        runtime: "45 min",
+        rating: "9.1/10",
+        description: "Eva arrives at the hidden city of New Attica, where she learns humans believe the worst about Orbona.",
+        director: "Tom Bancroft",
+        cast: "Jeanine Mason, Alan Tudyk, Brad Garrett"
+      },
+      { 
+        title: "Family", 
+        season: 2,
+        episode: 2,
+        year: 2024,
+        video: "https://example.com/wondla/s2e2", 
+        image: "https://m.media-amazon.com/images/S/pv-target-images/04f96a32c3055c7fe47d006191a936f222e8469c179a3809dcbd781437bd1344._BR-6_AC_SX720_FMwebp_.jpg",
+        runtime: "45 min",
+        rating: "9.0/10",
+        description: "Eva chases a mysterious figure deep into New Attica, leading to the discovery of a group of outsiders.",
+        director: "Tom Bancroft",
+        cast: "Jeanine Mason, Alan Tudyk, Gary Anthony Williams"
+      },
+      { 
+        title: "Discovery", 
+        season: 2,
+        episode: 3,
+        year: 2024,
+        video: "https://example.com/wondla/s2e3", 
+        image: "https://m.media-amazon.com/images/S/pv-target-images/65f2cd89b134bde1fd10f26276b3c6715b89d8466baf56f2335a57a7b995c30d._BR-6_AC_SX720_FMwebp_.jpg",
+        runtime: "45 min",
+        rating: "9.2/10",
+        description: "Desperate to locate her friends, Eva is horrified to find them in the clutches of a sinister threat.",
+        director: "Tom Bancroft",
+        cast: "Jeanine Mason, Alan Tudyk, Gary Anthony Williams"
+      },
+      { 
+        title: "Lesson", 
+        season: 2,
+        episode: 4,
+        year: 2024,
+        video: "https://example.com/wondla/s2e4", 
+        image: "https://m.media-amazon.com/images/S/pv-target-images/61acd7aa12a553dcb086c098619869df8483506d6ad4197cefd5c36ef6258cae._BR-6_AC_SX720_FMwebp_.jpg",
+        runtime: "45 min",
+        rating: "9.3/10",
+        description: "After a narrow escape, Eva, Eight, and Hailey trek the perilous wastelands to bring an injured Rovender home.",
+        director: "Tom Bancroft",
+        cast: "Jeanine Mason, Alan Tudyk, Brad Garrett"
+      },
+      { 
+        title: "Truth", 
+        season: 2,
+        episode: 5,
+        year: 2024,
+        video: "https://example.com/wondla/s2e5", 
+        image: "https://m.media-amazon.com/images/S/pv-target-images/3d203b94bb63b33b0de3a23f37cd252eead72728c14017d36c368ff08d290940._BR-6_AC_SX720_FMwebp_.jpg",
+        runtime: "45 min",
+        rating: "9.4/10",
+        description: "The Caeruleans refuse to let a dying Rovender back into their community. To save him, Eva seeks a mystical creature to restore his honor.",
+        director: "Tom Bancroft",
+        cast: "Jeanine Mason, Alan Tudyk, Brad Garrett, Gary Anthony Williams"
+      },
+      { 
+        title: "Connection", 
+        season: 2,
+        episode: 6,
+        year: 2024,
+        video: "https://example.com/wondla/s2e6", 
+        image: "https://m.media-amazon.com/images/S/pv-target-images/66bbac616dbaa6aba65ce3db7252cc348f94a236c271aace3855d91e67dd2416._BR-6_AC_SX720_FMwebp_.jpg",
+        runtime: "45 min",
+        rating: "9.6/10",
+        description: "During a Caerulean celebration, Eva connects with a powerful entity. Cadmus and his warbots bear down on Faunas.",
+        director: "Tom Bancroft",
+        cast: "Jeanine Mason, Alan Tudyk, Brad Garrett, Gary Anthony Williams"
+      },
+      { 
+        title: "Heart", 
+        season: 2,
+        episode: 7,
+        year: 2024,
+        video: "https://example.com/wondla/s1e6", 
+        image: "https://m.media-amazon.com/images/S/pv-target-images/4957d82410ad8896a66c68260d9b8756434a43fd2db4a905acf2f1c7fe9dbecc._BR-6_AC_SX720_FMwebp_.jpg",
+        runtime: "45 min",
+        rating: "9.5/10",
+        description: "Season finale. Eva risks her life to protect the Heart of the Forest.",
+        director: "Tom Bancroft",
+        cast: "Jeanine Mason, Alan Tudyk, Brad Garrett, Gary Anthony Williams"
+      },
+    ];
+
+    const container = document.getElementById('episodes');
+    const playbackModal = document.getElementById('playback-modal');
+    const closeModal = document.getElementById('close-modal');
+    const modalVideo = document.getElementById('modal-video');
+    const modalTitle = document.getElementById('modal-title');
+    const modalDescription = document.getElementById('modal-description');
+    const episodeNum = document.getElementById('episode-num');
+    const seasonNum = document.getElementById('season-num');
+
+    function isStream(url) {
+      return url.includes('.m3u8') || url.includes('.txt');
+    }
+
+    function openModal(episode) {
+      modalTitle.textContent = episode.title;
+      modalDescription.textContent = episode.description;
+      episodeNum.textContent = episode.episode;
+      seasonNum.textContent = episode.season;
+      modalVideo.src = episode.video;
+
+      playbackModal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+      modalVideo.play();
+    }
+
+    function closeModalHandler() {
+      playbackModal.classList.add('hidden');
+      modalVideo.pause();
+      modalVideo.src = "";
+      document.body.style.overflow = '';
+    }
+
+    closeModal.addEventListener('click', closeModalHandler);
+
+    // Render episode cards
+    episodes.forEach((episode) => {
+      const card = document.createElement('div');
+      card.className = 'episode-card cursor-pointer bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition transform hover:-translate-y-1 relative';
+      card.innerHTML = `
+        <div class="relative">
+          <img src="${episode.image}" alt="${episode.title}" class="w-full h-48 md:h-56 object-cover">
+          <div class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center opacity-0 transition">
+            <div class="play-icon absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-[#ff2d75] to-[#7e5bff] bg-opacity-90 rounded-full w-12 h-12 flex items-center justify-center opacity-0 transition">
+              <i class="fas fa-play text-white"></i>
+            </div>
+          </div>
+          <span class="absolute top-2 right-2 bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded">${episode.runtime}</span>
+          <span class="absolute top-2 left-2 bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded">S${episode.season}E${episode.episode}</span>
+        </div>
+        <div class="p-4">
+          <div class="flex justify-between items-start mb-1">
+            <h2 class="text-lg font-semibold">${episode.title}</h2>
+            <span class="text-purple-300 text-sm">${episode.rating}</span>
+          </div>
+          <p class="text-sm text-gray-400">Season ${episode.season} • Episode ${episode.episode}</p>
+        </div>
+      `;
+      card.addEventListener('click', () => {
+        if (isStream(episode.video)) {
+          const url = `player.html?title=${encodeURIComponent(episode.title)}&video=${encodeURIComponent(episode.video)}&index=${episode.episode}`;
+          window.location.href = url;
+        } else {
+          openModal(episode);
+        }
+      });
+      container.appendChild(card);
+    });
+  </script>
+</body>
+</html>
