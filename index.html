@@ -13,6 +13,7 @@
       font-family: 'Poppins', sans-serif;
       background: linear-gradient(to bottom, #000000, #1a1a2e);
       min-height: 100vh;
+      overflow-x: hidden;
     }
     .episode-card:hover .play-icon {
       opacity: 1;
@@ -38,11 +39,29 @@
       }
     }
     .showcase-header {
-      background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%), 
-                  url('https://assets.apple.com/v/apple-tv-plus/shows/wondla/season-1/images/show-home-graphic-header/medium.jpg') no-repeat center center;
-      background-size: cover;
-      height: 70vh;
-      min-height: 500px;
+      position: relative;
+      height: 100vh;
+      min-height: 600px;
+      max-height: 1200px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .showcase-video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+    }
+    .showcase-overlay {
+      position: relative;
+      z-index: 1;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0) 100%);
+      width: 100%;
+      height: 100%;
       display: flex;
       flex-direction: column;
     }
@@ -53,73 +72,136 @@
       color: transparent;
       font-weight: 600;
     }
+    .mobile-menu {
+      transform: translateX(100%);
+      transition: transform 0.3s ease-out;
+    }
+    .mobile-menu.open {
+      transform: translateX(0);
+    }
+    .scroll-down-indicator {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      animation: bounce 2s infinite;
+    }
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0) translateX(-50%);
+      }
+      40% {
+        transform: translateY(-20px) translateX(-50%);
+      }
+      60% {
+        transform: translateY(-10px) translateX(-50%);
+      }
+    }
+    @media (max-width: 768px) {
+      .showcase-header {
+        min-height: 100vh;
+        height: auto;
+      }
+      .showcase-content {
+        padding-top: 30vh;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="showcase-header">
-    <header class="bg-gradient-to-b from-black to-transparent py-4 px-6">
-      <div class="container mx-auto flex justify-between items-center">
-        <div class="flex items-center space-x-2">
-          <div class="w-10 h-10 bg-gradient-to-r from-[#ff2d75] to-[#7e5bff] rounded-full flex items-center justify-center">
-            <i class="fas fa-play text-white"></i>
-          </div>
-          <h1 class="text-xl font-bold apple-logo">WondLa<span class="text-white">+</span></h1>
-        </div>
-        <nav class="hidden md:flex space-x-6">
-          <a href="#" class="text-white hover:text-purple-300 transition">Home</a>
-          <a href="#" class="text-white hover:text-purple-300 transition">Episodes</a>
-          <a href="#" class="text-white hover:text-purple-300 transition">Characters</a>
-          <a href="#" class="text-white hover:text-purple-300 transition">Gallery</a>
-        </nav>
-        <button class="md:hidden text-2xl text-white">
-          <i class="fas fa-bars"></i>
-        </button>
+  <!-- Mobile Menu -->
+  <div id="mobile-menu" class="mobile-menu fixed inset-0 bg-black bg-opacity-90 z-50 p-6 flex flex-col items-center justify-center">
+    <button id="close-menu" class="absolute top-6 right-6 text-white text-3xl">
+      <i class="fas fa-times"></i>
+    </button>
+    <nav class="flex flex-col items-center space-y-8">
+      <a href="#" class="text-white text-2xl hover:text-purple-300 transition">Home</a>
+      <a href="#" class="text-white text-2xl hover:text-purple-300 transition">Episodes</a>
+      <a href="#" class="text-white text-2xl hover:text-purple-300 transition">Characters</a>
+      <a href="#" class="text-white text-2xl hover:text-purple-300 transition">Gallery</a>
+      <div class="pt-8 flex space-x-6">
+        <a href="#" class="text-white text-xl hover:text-purple-300 transition"><i class="fab fa-twitter"></i></a>
+        <a href="#" class="text-white text-xl hover:text-purple-300 transition"><i class="fab fa-instagram"></i></a>
+        <a href="#" class="text-white text-xl hover:text-purple-300 transition"><i class="fab fa-facebook"></i></a>
       </div>
-    </header>
+    </nav>
+  </div>
 
-    <div class="container mx-auto px-4 flex-1 flex items-center">
-      <div class="max-w-4xl">
-        <h1 class="text-5xl md:text-6xl font-bold mb-4 gradient-text">WondLa</h1>
-        <div class="flex items-center space-x-4 mb-6">
-          <span class="bg-gradient-to-r from-[#ff2d75] to-[#7e5bff] text-white px-3 py-1 rounded-full text-sm font-semibold">Seasons 1 & 2</span>
-          <span class="text-gray-400">2024</span>
-          <span class="text-gray-400">•</span>
-          <span class="text-gray-400">14 Episodes</span>
-        </div>
-        <p class="text-lg text-gray-300 mb-6">
-          Follow Eva Nine, a young human girl raised underground by a robot, as she emerges to discover the alien world of Orbona. 
-          With her companions Rovender Kitt and the robot Muthr, Eva embarks on an epic journey to uncover the truth about her origins 
-          and the mysterious WondLa.
-        </p>
-        <div class="flex space-x-4">
-          <button class="bg-gradient-to-r from-[#ff2d75] to-[#7e5bff] hover:from-[#e5276a] hover:to-[#6d4de8] text-white font-semibold py-3 px-8 rounded-full flex items-center transition transform hover:scale-105">
-            <i class="fas fa-play mr-2"></i> Play All
+  <!-- Showcase Header -->
+  <div class="showcase-header">
+    <video class="showcase-video" autoplay muted loop playsinline poster="https://assets.apple.com/v/apple-tv-plus/shows/wondla/season-1/images/show-home-graphic-header/medium.jpg">
+      <source src="https://imdb-video.media-imdb.com/vi4265986329/1434659607842-pgv4ql-1744031694069.mp4?Expires=1748650444&Signature=V818SvLLhTtVMJnYgAbZkRyoA11TNCjTVMg5AD8LC9xQ0MoZs6wyx5ObiIHdk1bR~rUzCJKbCz29Jc733ApppNHugoiToGT-s~UUVjZ8GQIfKAIUmatheTNAVn~RA9cXgI1FRytCGGbtVk2vYY6haYBM9v~ejhm1waMhKyv7lFs9RuH7WAIMSagG4BDU~H44CH8NkCPndUw47JHYlcN2yaRiAm07BK2MgCt2NXlyVfwTEtbkI-9v4LIaaPRMu62SPqOSrQkI2sif~ANzLcrIUmxcOJNAPMiGsT3cAp~Ip6pdZNVQTmc7AG172YsfCUea5rcVKgJDHjKYlUOlzRlzDw__&Key-Pair-Id=APKAIFLZBVQZ24NQH3KA" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+    <div class="showcase-overlay">
+      <header class="bg-gradient-to-b from-black to-transparent py-4 px-6">
+        <div class="container mx-auto flex justify-between items-center">
+          <div class="flex items-center space-x-2">
+            <div class="w-10 h-10 bg-gradient-to-r from-[#ff2d75] to-[#7e5bff] rounded-full flex items-center justify-center">
+              <i class="fas fa-play text-white"></i>
+            </div>
+            <h1 class="text-xl font-bold apple-logo">WondLa<span class="text-white">+</span></h1>
+          </div>
+          <nav class="hidden md:flex space-x-6">
+            <a href="#" class="text-white hover:text-purple-300 transition">Home</a>
+            <a href="#" class="text-white hover:text-purple-300 transition">Episodes</a>
+            <a href="#" class="text-white hover:text-purple-300 transition">Characters</a>
+            <a href="#" class="text-white hover:text-purple-300 transition">Gallery</a>
+          </nav>
+          <button id="open-menu" class="md:hidden text-2xl text-white">
+            <i class="fas fa-bars"></i>
           </button>
-          <button class="bg-gray-800 hover:bg-gray-700 text-white font-semibold py-3 px-8 rounded-full flex items-center transition">
-            <i class="fas fa-plus mr-2"></i> My List
-          </button>
         </div>
+      </header>
+
+      <div class="container mx-auto px-4 flex-1 flex items-center showcase-content">
+        <div class="max-w-4xl">
+          <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 gradient-text">WondLa</h1>
+          <div class="flex items-center space-x-2 sm:space-x-4 mb-6 flex-wrap">
+            <span class="bg-gradient-to-r from-[#ff2d75] to-[#7e5bff] text-white px-3 py-1 rounded-full text-xs sm:text-sm font-semibold mb-2 sm:mb-0">Seasons 1 & 2</span>
+            <span class="text-gray-400 text-xs sm:text-sm">2024</span>
+            <span class="text-gray-400 hidden sm:block">•</span>
+            <span class="text-gray-400 text-xs sm:text-sm">14 Episodes</span>
+          </div>
+          <p class="text-base sm:text-lg text-gray-300 mb-6">
+            Follow Eva Nine, a young human girl raised underground by a robot, as she emerges to discover the alien world of Orbona. 
+            With her companions Rovender Kitt and the robot Muthr, Eva embarks on an epic journey to uncover the truth about her origins 
+            and the mysterious WondLa.
+          </p>
+          <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+            <button class="bg-gradient-to-r from-[#ff2d75] to-[#7e5bff] hover:from-[#e5276a] hover:to-[#6d4de8] text-white font-semibold py-3 px-6 sm:px-8 rounded-full flex items-center justify-center transition transform hover:scale-105">
+              <i class="fas fa-play mr-2"></i> Play All
+            </button>
+            <button class="bg-gray-800 hover:bg-gray-700 text-white font-semibold py-3 px-6 sm:px-8 rounded-full flex items-center justify-center transition">
+              <i class="fas fa-plus mr-2"></i> My List
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="scroll-down-indicator">
+        <i class="fas fa-chevron-down text-white text-2xl animate-bounce"></i>
       </div>
     </div>
   </div>
 
-  <main class="container mx-auto px-4 pb-16">
-    <div class="flex justify-between items-center mb-8">
-      <h2 class="text-3xl font-bold flex items-center">
-        <span class="mr-4">Episodes</span>
-        <span class="text-purple-300 text-xl">Seasons 1 & 2</span>
+  <main class="container mx-auto px-4 py-12 sm:py-16">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+      <h2 class="text-2xl sm:text-3xl font-bold flex items-center">
+        <span class="mr-2 sm:mr-4">Episodes</span>
+        <span class="text-purple-300 text-lg sm:text-xl">Seasons 1 & 2</span>
       </h2>
       <div class="flex space-x-2">
-        <button class="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-full text-sm">Season 1</button>
-        <button class="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-full text-sm">Season 2</button>
+        <button class="bg-gray-800 hover:bg-gray-700 text-white px-3 sm:px-4 py-1 sm:py-2 rounded-full text-xs sm:text-sm">Season 1</button>
+        <button class="bg-gray-800 hover:bg-gray-700 text-white px-3 sm:px-4 py-1 sm:py-2 rounded-full text-xs sm:text-sm">Season 2</button>
       </div>
     </div>
     
-    <div id="episodes" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+    <div id="episodes" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
   </main>
 
   <!-- Modal -->
-  <div id="playback-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-90">
+  <div id="playback-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-90 p-4">
     <div class="relative w-full max-w-4xl bg-gray-900 rounded-xl overflow-hidden modal-enter">
       <button id="close-modal" class="absolute top-4 right-4 z-50 text-white hover:text-purple-300 text-2xl transition">
         <i class="fas fa-times"></i>
@@ -127,11 +209,11 @@
       <div class="aspect-w-16 aspect-h-9">
         <video id="modal-video" class="w-full" controls poster="https://assets.apple.com/v/apple-tv-plus/shows/wondla/season-1/images/show-home-graphic-header/medium.jpg"></video>
       </div>
-      <div class="p-6">
-        <div class="flex justify-between items-start mb-4">
+      <div class="p-4 sm:p-6">
+        <div class="flex flex-col sm:flex-row justify-between items-start mb-4 gap-4">
           <div>
-            <h3 id="modal-title" class="text-2xl font-bold mb-1"></h3>
-            <div class="text-gray-400 text-sm">
+            <h3 id="modal-title" class="text-xl sm:text-2xl font-bold mb-1"></h3>
+            <div class="text-gray-400 text-xs sm:text-sm">
               <span>S<span id="season-num">1</span> • E<span id="episode-num"></span></span> • 45 min • <span class="text-purple-300">★ 9.1/10</span>
             </div>
           </div>
@@ -144,59 +226,59 @@
             </button>
           </div>
         </div>
-        <p id="modal-description" class="text-gray-300 mb-6"></p>
-        <div class="flex space-x-4">
-          <button class="bg-gradient-to-r from-[#ff2d75] to-[#7e5bff] hover:from-[#e5276a] hover:to-[#6d4de8] text-white font-semibold py-3 px-8 rounded-full flex items-center transition transform hover:scale-105">
+        <p id="modal-description" class="text-gray-300 mb-4 sm:mb-6 text-sm sm:text-base"></p>
+        <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+          <button class="bg-gradient-to-r from-[#ff2d75] to-[#7e5bff] hover:from-[#e5276a] hover:to-[#6d4de8] text-white font-semibold py-2 sm:py-3 px-4 sm:px-8 rounded-full flex items-center justify-center transition transform hover:scale-105">
             <i class="fas fa-play mr-2"></i> Play
           </button>
-          <button class="bg-gray-800 hover:bg-gray-700 text-white font-semibold py-3 px-8 rounded-full flex items-center transition">
+          <button class="bg-gray-800 hover:bg-gray-700 text-white font-semibold py-2 sm:py-3 px-4 sm:px-8 rounded-full flex items-center justify-center transition">
             <i class="fas fa-plus mr-2"></i> Watchlist
           </button>
-          <button class="bg-gray-800 hover:bg-gray-700 text-white font-semibold py-3 px-4 rounded-full transition">
+          <button class="bg-gray-800 hover:bg-gray-700 text-white font-semibold py-2 sm:py-3 px-4 rounded-full flex items-center justify-center transition">
             <i class="fas fa-thumbs-up"></i>
           </button>
         </div>
-        <div class="mt-6 pt-6 border-t border-gray-800">
-          <h4 class="text-sm font-semibold text-gray-400 mb-2">Starring</h4>
-          <p class="text-gray-300 text-sm">Jeanine Mason, Alan Tudyk, Brad Garrett, Gary Anthony Williams</p>
+        <div class="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-800">
+          <h4 class="text-xs sm:text-sm font-semibold text-gray-400 mb-2">Starring</h4>
+          <p class="text-gray-300 text-xs sm:text-sm">Jeanine Mason, Alan Tudyk, Brad Garrett, Gary Anthony Williams</p>
         </div>
       </div>
     </div>
   </div>
 
-  <footer class="bg-gray-900 py-12">
+  <footer class="bg-gray-900 py-8 sm:py-12">
     <div class="container mx-auto px-4">
-      <div class="flex flex-col md:flex-row justify-between items-center">
+      <div class="flex flex-col md:flex-row justify-between items-start">
         <div class="mb-6 md:mb-0">
           <div class="flex items-center space-x-2 mb-4">
-            <div class="w-10 h-10 bg-gradient-to-r from-[#ff2d75] to-[#7e5bff] rounded-full flex items-center justify-center">
-              <i class="fas fa-play text-white"></i>
+            <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-[#ff2d75] to-[#7e5bff] rounded-full flex items-center justify-center">
+              <i class="fas fa-play text-white text-xs sm:text-sm"></i>
             </div>
-            <h1 class="text-xl font-bold apple-logo">WondLa<span class="text-white">+</span></h1>
+            <h1 class="text-lg sm:text-xl font-bold apple-logo">WondLa<span class="text-white">+</span></h1>
           </div>
-          <p class="text-gray-400 text-sm">© 2024 Apple TV+ Original Series</p>
+          <p class="text-gray-400 text-xs sm:text-sm">© 2024 Apple TV+ Original Series</p>
         </div>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
           <div>
-            <h3 class="text-gray-300 font-semibold mb-3">Navigation</h3>
-            <ul class="space-y-2">
-              <li><a href="#" class="text-gray-400 hover:text-purple-300 text-sm transition">Home</a></li>
-              <li><a href="#" class="text-gray-400 hover:text-purple-300 text-sm transition">Episodes</a></li>
-              <li><a href="#" class="text-gray-400 hover:text-purple-300 text-sm transition">Characters</a></li>
-              <li><a href="#" class="text-gray-400 hover:text-purple-300 text-sm transition">Gallery</a></li>
+            <h3 class="text-gray-300 font-semibold mb-2 sm:mb-3 text-sm sm:text-base">Navigation</h3>
+            <ul class="space-y-1 sm:space-y-2">
+              <li><a href="#" class="text-gray-400 hover:text-purple-300 text-xs sm:text-sm transition">Home</a></li>
+              <li><a href="#" class="text-gray-400 hover:text-purple-300 text-xs sm:text-sm transition">Episodes</a></li>
+              <li><a href="#" class="text-gray-400 hover:text-purple-300 text-xs sm:text-sm transition">Characters</a></li>
+              <li><a href="#" class="text-gray-400 hover:text-purple-300 text-xs sm:text-sm transition">Gallery</a></li>
             </ul>
           </div>
           <div>
-            <h3 class="text-gray-300 font-semibold mb-3">Legal</h3>
-            <ul class="space-y-2">
-              <li><a href="#" class="text-gray-400 hover:text-purple-300 text-sm transition">Terms</a></li>
-              <li><a href="#" class="text-gray-400 hover:text-purple-300 text-sm transition">Privacy</a></li>
-              <li><a href="#" class="text-gray-400 hover:text-purple-300 text-sm transition">Cookies</a></li>
+            <h3 class="text-gray-300 font-semibold mb-2 sm:mb-3 text-sm sm:text-base">Legal</h3>
+            <ul class="space-y-1 sm:space-y-2">
+              <li><a href="#" class="text-gray-400 hover:text-purple-300 text-xs sm:text-sm transition">Terms</a></li>
+              <li><a href="#" class="text-gray-400 hover:text-purple-300 text-xs sm:text-sm transition">Privacy</a></li>
+              <li><a href="#" class="text-gray-400 hover:text-purple-300 text-xs sm:text-sm transition">Cookies</a></li>
             </ul>
           </div>
           <div>
-            <h3 class="text-gray-300 font-semibold mb-3">Social</h3>
-            <div class="flex space-x-4">
+            <h3 class="text-gray-300 font-semibold mb-2 sm:mb-3 text-sm sm:text-base">Social</h3>
+            <div class="flex space-x-3 sm:space-x-4">
               <a href="#" class="text-gray-400 hover:text-purple-300 transition"><i class="fab fa-twitter"></i></a>
               <a href="#" class="text-gray-400 hover:text-purple-300 transition"><i class="fab fa-instagram"></i></a>
               <a href="#" class="text-gray-400 hover:text-purple-300 transition"><i class="fab fa-facebook"></i></a>
@@ -207,7 +289,7 @@
     </div>
   </footer>
 
-  <script>
+<script>
     const episodes = [
       // Season 1
       { 
@@ -215,7 +297,7 @@
         season: 1,
         episode: 1,
         year: 2024,
-        video: "https://kfo8mkce0fzdhlq.cdn-centaurus.com:443/hls2/01/04243/9wjg9r3mjclo_,n,h,x,.urlset/index-f3-v1-a1.m3u8?t=6V_7LOLrmhTsXOFmlhAfDi6AbAwGgOXo7-VcHskqjWk&s=1748423091&e=129600&f=21217315&srv=pg8s50jw8kzp&i=0.4&sp=500&p1=pg8s50jw8kzp&p2=pg8s50jw8kzp&asn=24554", 
+        video: "https://macdn.hakunaymatata.com/resource/42633c62291bd3262f9f0ca167673a92.mp4?Expires=1749773792&Signature=A~f7nNv26OaSRJars7VsmPquuJyvC1oa69o3FtpzoAPqzlElNWgQKdSZdIoOx~q3lDDC94EGLfJ8dtlxN6KXLfCalNl5SzEPtHfe8T0hLAJnkJIURZ~xHMraqlzb8lRlItr~gCMYd3~91fPFhurdAMaeY58vi3KtYes4BUSo6DAHMR-Afvyl9lw69ipCcTcKkCLHvLZ0piY-whYEXvP9jqVN3jqKyMSGDJHOPjlZkP8y0ULw3wSgNdReD8sGbhlDcpJDKPuDlPQjAjwVar5qTfivS~HqSHMuAKWLT8nJCvdbMWTcoBPp-k8MS4ntjtkb-2eoj9R5Re0Ux5BCLlIvrg__&Key-Pair-Id=KMHN1LQ1HEUPL", 
         image: "https://m.media-amazon.com/images/S/pv-target-images/df9d65a374a436b71648a8c844aa352a3d677a5436e362023af0e62bbb13a12e._BR-6_AC_SX720_FMwebp_.jpg",
         runtime: "45 min",
         rating: "9.0/10",
