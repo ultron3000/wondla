@@ -2,548 +2,219 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>WondLa | Apple TV+ Original Series</title>
+  <title>WondLa</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Stream all episodes of WondLa Seasons 1 & 2, the breathtaking Apple TV+ animated series based on Tony DiTerlizzi's books.">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.1/dist/hls.min.js"></script>
+
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(to bottom, #000000, #1a1a2e);
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-    .episode-card:hover .play-icon {
-      opacity: 1;
-      transform: translate(-50%, -50%) scale(1.1);
-    }
-    .gradient-text {
-      background: linear-gradient(90deg, #ff2d75 0%, #7e5bff 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-    }
-    .modal-enter {
-      animation: modalEnter 0.3s ease-out forwards;
-    }
-    @keyframes modalEnter {
-      from {
-        opacity: 0;
-        transform: scale(0.95);
-      }
-      to {
-        opacity: 1;
-        transform: scale(1);
-      }
-    }
-    .showcase-header {
-      position: relative;
-      height: 100vh;
-      min-height: 600px;
-      max-height: 1200px;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-    .showcase-video {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      z-index: 0;
-    }
-    .showcase-overlay {
-      position: relative;
-      z-index: 1;
-      background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0) 100%);
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-    }
-    .apple-logo {
-      background: linear-gradient(to right, #A2AAAD, #FAFBFB);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      font-weight: 600;
-    }
-    .mobile-menu {
-      transform: translateX(100%);
-      transition: transform 0.3s ease-out;
-    }
-    .mobile-menu.open {
-      transform: translateX(0);
-    }
-    .scroll-down-indicator {
-      position: absolute;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      animation: bounce 2s infinite;
-    }
-    @keyframes bounce {
-      0%, 20%, 50%, 80%, 100% {
-        transform: translateY(0) translateX(-50%);
-      }
-      40% {
-        transform: translateY(-20px) translateX(-50%);
-      }
-      60% {
-        transform: translateY(-10px) translateX(-50%);
-      }
-    }
-    @media (max-width: 768px) {
-      .showcase-header {
-        min-height: 100vh;
-        height: auto;
-      }
-      .showcase-content {
-        padding-top: 30vh;
-      }
-    }
+    body { background: #0b0f14; color: #e6eef6; font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; }
+    header, footer { background: #071122; }
+    .season-btn.active { background:#ffd166 !important; color:#081017 !important; }
+    .movie-card { background: #071627; border:1px solid rgba(255,255,255,0.03); }
+    .modal-overlay { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.85); z-index:1000; }
+    .modal-card { width:95%; max-width:1100px; border-radius:10px; overflow:hidden; }
+    .modal-player { position:relative; padding-bottom:56.25%; height:0; background:black; }
+    .modal-player video, .modal-player iframe { position:absolute; inset:0; width:100%; height:100%; }
   </style>
 </head>
-<body>
-  <!-- Mobile Menu -->
-  <div id="mobile-menu" class="mobile-menu fixed inset-0 bg-black bg-opacity-90 z-50 p-6 flex flex-col items-center justify-center">
-    <button id="close-menu" class="absolute top-6 right-6 text-white text-3xl">
-      <i class="fas fa-times"></i>
-    </button>
-    <nav class="flex flex-col items-center space-y-8">
-      <a href="#" class="text-white text-2xl hover:text-purple-300 transition">Home</a>
-      <a href="#" class="text-white text-2xl hover:text-purple-300 transition">Episodes</a>
-      <a href="#" class="text-white text-2xl hover:text-purple-300 transition">Characters</a>
-      <a href="#" class="text-white text-2xl hover:text-purple-300 transition">Gallery</a>
-      <div class="pt-8 flex space-x-6">
-        <a href="#" class="text-white text-xl hover:text-purple-300 transition"><i class="fab fa-twitter"></i></a>
-        <a href="#" class="text-white text-xl hover:text-purple-300 transition"><i class="fab fa-instagram"></i></a>
-        <a href="#" class="text-white text-xl hover:text-purple-300 transition"><i class="fab fa-facebook"></i></a>
-      </div>
-    </nav>
-  </div>
+<body class="min-h-screen">
 
-  <!-- Showcase Header -->
-  <div class="showcase-header">
-    <video class="showcase-video" autoplay muted loop playsinline poster="https://assets.apple.com/v/apple-tv-plus/shows/wondla/season-1/images/show-home-graphic-header/medium.jpg">
-      <source src="https://imdb-video.media-imdb.com/vi4265986329/1434659607842-pgv4ql-1744031694069.mp4?Expires=1748650444&Signature=V818SvLLhTtVMJnYgAbZkRyoA11TNCjTVMg5AD8LC9xQ0MoZs6wyx5ObiIHdk1bR~rUzCJKbCz29Jc733ApppNHugoiToGT-s~UUVjZ8GQIfKAIUmatheTNAVn~RA9cXgI1FRytCGGbtVk2vYY6haYBM9v~ejhm1waMhKyv7lFs9RuH7WAIMSagG4BDU~H44CH8NkCPndUw47JHYlcN2yaRiAm07BK2MgCt2NXlyVfwTEtbkI-9v4LIaaPRMu62SPqOSrQkI2sif~ANzLcrIUmxcOJNAPMiGsT3cAp~Ip6pdZNVQTmc7AG172YsfCUea5rcVKgJDHjKYlUOlzRlzDw__&Key-Pair-Id=APKAIFLZBVQZ24NQH3KA" type="video/mp4">
-      Your browser does not support the video tag.
-    </video>
-    <div class="showcase-overlay">
-      <header class="bg-gradient-to-b from-black to-transparent py-4 px-6">
-        <div class="container mx-auto flex justify-between items-center">
-          <div class="flex items-center space-x-2">
-            <div class="w-10 h-10 bg-gradient-to-r from-[#ff2d75] to-[#7e5bff] rounded-full flex items-center justify-center">
-              <i class="fas fa-play text-white"></i>
-            </div>
-            <h1 class="text-xl font-bold apple-logo">WondLa<span class="text-white">+</span></h1>
-          </div>
-          <nav class="hidden md:flex space-x-6">
-            <a href="#" class="text-white hover:text-purple-300 transition">Home</a>
-            <a href="#" class="text-white hover:text-purple-300 transition">Episodes</a>
-            <a href="#" class="text-white hover:text-purple-300 transition">Characters</a>
-            <a href="#" class="text-white hover:text-purple-300 transition">Gallery</a>
-          </nav>
-          <button id="open-menu" class="md:hidden text-2xl text-white">
-            <i class="fas fa-bars"></i>
-          </button>
-        </div>
-      </header>
+<header class="sticky top-0 z-50 bg-black/60 backdrop-blur-md border-b border-slate-700/20">
+  <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+    <div class="flex items-center space-x-3">
+      <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
+        <i class="fas fa-globe text-white text-2xl"></i>
+      </div>
+      <div>
+        <h1 class="text-2xl font-bold">WondLa</h1>
+        <div class="text-xs text-slate-300">Animated Series • Seasons 1–2</div>
+      </div>
+    </div>
 
-      <div class="container mx-auto px-4 flex-1 flex items-center showcase-content">
-        <div class="max-w-4xl">
-          <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold mb-4 gradient-text">WondLa</h1>
-          <div class="flex items-center space-x-2 sm:space-x-4 mb-6 flex-wrap">
-            <span class="bg-gradient-to-r from-[#ff2d75] to-[#7e5bff] text-white px-3 py-1 rounded-full text-xs sm:text-sm font-semibold mb-2 sm:mb-0">Seasons 1 & 2</span>
-            <span class="text-gray-400 text-xs sm:text-sm">2024</span>
-            <span class="text-gray-400 hidden sm:block">•</span>
-            <span class="text-gray-400 text-xs sm:text-sm">14 Episodes</span>
-          </div>
-          <p class="text-base sm:text-lg text-gray-300 mb-6">
-            Follow Eva Nine, a young human girl raised underground by a robot, as she emerges to discover the alien world of Orbona. 
-            With her companions Rovender Kitt and the robot Muthr, Eva embarks on an epic journey to uncover the truth about her origins 
-            and the mysterious WondLa.
-          </p>
-          <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
-            <button class="bg-gradient-to-r from-[#ff2d75] to-[#7e5bff] hover:from-[#e5276a] hover:to-[#6d4de8] text-white font-semibold py-3 px-6 sm:px-8 rounded-full flex items-center justify-center transition transform hover:scale-105">
-              <i class="fas fa-play mr-2"></i> Play All
-            </button>
-            <button class="bg-gray-800 hover:bg-gray-700 text-white font-semibold py-3 px-6 sm:px-8 rounded-full flex items-center justify-center transition">
-              <i class="fas fa-plus mr-2"></i> My List
-            </button>
-          </div>
-        </div>
+    <div class="flex items-center gap-3">
+      <div class="hidden md:block">
+        <input id="search-input" type="search" placeholder="Search episodes..." class="rounded-full px-3 py-2 bg-slate-900 text-slate-100 border border-slate-800" />
       </div>
-      
-      <div class="scroll-down-indicator">
-        <i class="fas fa-chevron-down text-white text-2xl animate-bounce"></i>
-      </div>
+      <button id="open-search-mobile" class="md:hidden p-2 rounded-full bg-slate-800"><i class="fas fa-search text-white"></i></button>
     </div>
   </div>
+</header>
 
-  <main class="container mx-auto px-4 py-12 sm:py-16">
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
-      <h2 class="text-2xl sm:text-3xl font-bold flex items-center">
-        <span class="mr-2 sm:mr-4">Episodes</span>
-        <span class="text-purple-300 text-lg sm:text-xl">Seasons 1 & 2</span>
-      </h2>
-      <div class="flex space-x-2">
-        <button class="bg-gray-800 hover:bg-gray-700 text-white px-3 sm:px-4 py-1 sm:py-2 rounded-full text-xs sm:text-sm">Season 1</button>
-        <button class="bg-gray-800 hover:bg-gray-700 text-white px-3 sm:px-4 py-1 sm:py-2 rounded-full text-xs sm:text-sm">Season 2</button>
-      </div>
+<main class="container mx-auto px-4 py-8">
+  <section class="mb-6">
+    <div class="rounded-lg overflow-hidden bg-gradient-to-r from-slate-900 to-slate-800 p-6">
+      <h2 class="text-xl font-semibold">WondLa — Adventures on Orbona</h2>
+      <p class="text-slate-300 mt-2">Follow Eva’s journey across the world of Orbona as she discovers humanity’s past, present, and future.</p>
     </div>
-    
-    <div id="episodes" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
-  </main>
+  </section>
 
-  <!-- Modal -->
-  <div id="playback-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-90 p-4">
-    <div class="relative w-full max-w-4xl bg-gray-900 rounded-xl overflow-hidden modal-enter">
-      <button id="close-modal" class="absolute top-4 right-4 z-50 text-white hover:text-purple-300 text-2xl transition">
-        <i class="fas fa-times"></i>
-      </button>
-      <div class="aspect-w-16 aspect-h-9">
-        <video id="modal-video" class="w-full" controls poster="https://assets.apple.com/v/apple-tv-plus/shows/wondla/season-1/images/show-home-graphic-header/medium.jpg"></video>
-      </div>
-      <div class="p-4 sm:p-6">
-        <div class="flex flex-col sm:flex-row justify-between items-start mb-4 gap-4">
-          <div>
-            <h3 id="modal-title" class="text-xl sm:text-2xl font-bold mb-1"></h3>
-            <div class="text-gray-400 text-xs sm:text-sm">
-              <span>S<span id="season-num">1</span> • E<span id="episode-num"></span></span> • 45 min • <span class="text-purple-300">★ 9.1/10</span>
-            </div>
-          </div>
-          <div class="flex space-x-3">
-            <button class="text-gray-400 hover:text-white transition">
-              <i class="fas fa-share-alt"></i>
-            </button>
-            <button class="text-gray-400 hover:text-white transition">
-              <i class="fas fa-ellipsis-h"></i>
-            </button>
-          </div>
-        </div>
-        <p id="modal-description" class="text-gray-300 mb-4 sm:mb-6 text-sm sm:text-base"></p>
-        <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
-          <button class="bg-gradient-to-r from-[#ff2d75] to-[#7e5bff] hover:from-[#e5276a] hover:to-[#6d4de8] text-white font-semibold py-2 sm:py-3 px-4 sm:px-8 rounded-full flex items-center justify-center transition transform hover:scale-105">
-            <i class="fas fa-play mr-2"></i> Play
-          </button>
-          <button class="bg-gray-800 hover:bg-gray-700 text-white font-semibold py-2 sm:py-3 px-4 sm:px-8 rounded-full flex items-center justify-center transition">
-            <i class="fas fa-plus mr-2"></i> Watchlist
-          </button>
-          <button class="bg-gray-800 hover:bg-gray-700 text-white font-semibold py-2 sm:py-3 px-4 rounded-full flex items-center justify-center transition">
-            <i class="fas fa-thumbs-up"></i>
-          </button>
-        </div>
-        <div class="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-gray-800">
-          <h4 class="text-xs sm:text-sm font-semibold text-gray-400 mb-2">Starring</h4>
-          <p class="text-gray-300 text-xs sm:text-sm">Jeanine Mason, Alan Tudyk, Brad Garrett, Gary Anthony Williams</p>
-        </div>
-      </div>
+  <section class="mb-6">
+    <div class="flex gap-2 overflow-x-auto pb-2">
+      <button class="season-btn active px-4 py-2 rounded-full" data-season="all">All Episodes</button>
+      <button class="season-btn px-4 py-2 rounded-full" data-season="1">Season 1</button>
+      <button class="season-btn px-4 py-2 rounded-full" data-season="2">Season 2</button>
+    </div>
+  </section>
+
+  <section>
+    <h3 class="text-lg font-medium mb-4">Episodes</h3>
+    <div id="movies" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+  </section>
+</main>
+
+<footer class="py-6 text-center text-slate-400">© WondLa</footer>
+
+<!-- Modal -->
+<div id="video-modal" class="modal-overlay hidden" aria-hidden="true">
+  <div class="modal-card bg-black">
+    <div class="flex justify-between items-center p-3 border-b border-slate-800">
+      <div id="modal-title" class="text-white font-semibold"></div>
+      <button id="close-video-modal" class="p-2 rounded-full bg-slate-800 text-white"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-player">
+      <video id="modal-video" controls playsinline preload="metadata"></video>
     </div>
   </div>
-
-  <footer class="bg-gray-900 py-8 sm:py-12">
-    <div class="container mx-auto px-4">
-      <div class="flex flex-col md:flex-row justify-between items-start">
-        <div class="mb-6 md:mb-0">
-          <div class="flex items-center space-x-2 mb-4">
-            <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-[#ff2d75] to-[#7e5bff] rounded-full flex items-center justify-center">
-              <i class="fas fa-play text-white text-xs sm:text-sm"></i>
-            </div>
-            <h1 class="text-lg sm:text-xl font-bold apple-logo">WondLa<span class="text-white">+</span></h1>
-          </div>
-          <p class="text-gray-400 text-xs sm:text-sm">© 2024 Apple TV+ Original Series</p>
-        </div>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
-          <div>
-            <h3 class="text-gray-300 font-semibold mb-2 sm:mb-3 text-sm sm:text-base">Navigation</h3>
-            <ul class="space-y-1 sm:space-y-2">
-              <li><a href="#" class="text-gray-400 hover:text-purple-300 text-xs sm:text-sm transition">Home</a></li>
-              <li><a href="#" class="text-gray-400 hover:text-purple-300 text-xs sm:text-sm transition">Episodes</a></li>
-              <li><a href="#" class="text-gray-400 hover:text-purple-300 text-xs sm:text-sm transition">Characters</a></li>
-              <li><a href="#" class="text-gray-400 hover:text-purple-300 text-xs sm:text-sm transition">Gallery</a></li>
-            </ul>
-          </div>
-          <div>
-            <h3 class="text-gray-300 font-semibold mb-2 sm:mb-3 text-sm sm:text-base">Legal</h3>
-            <ul class="space-y-1 sm:space-y-2">
-              <li><a href="#" class="text-gray-400 hover:text-purple-300 text-xs sm:text-sm transition">Terms</a></li>
-              <li><a href="#" class="text-gray-400 hover:text-purple-300 text-xs sm:text-sm transition">Privacy</a></li>
-              <li><a href="#" class="text-gray-400 hover:text-purple-300 text-xs sm:text-sm transition">Cookies</a></li>
-            </ul>
-          </div>
-          <div>
-            <h3 class="text-gray-300 font-semibold mb-2 sm:mb-3 text-sm sm:text-base">Social</h3>
-            <div class="flex space-x-3 sm:space-x-4">
-              <a href="#" class="text-gray-400 hover:text-purple-300 transition"><i class="fab fa-twitter"></i></a>
-              <a href="#" class="text-gray-400 hover:text-purple-300 transition"><i class="fab fa-instagram"></i></a>
-              <a href="#" class="text-gray-400 hover:text-purple-300 transition"><i class="fab fa-facebook"></i></a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </footer>
+</div>
 
 <script>
-    const episodes = [
-      // Season 1
-      { 
-        title: "Doors", 
-        season: 1,
-        episode: 1,
-        year: 2024,
-        video: "https://macdn.hakunaymatata.com/resource/42633c62291bd3262f9f0ca167673a92.mp4?Expires=1749773792&Signature=A~f7nNv26OaSRJars7VsmPquuJyvC1oa69o3FtpzoAPqzlElNWgQKdSZdIoOx~q3lDDC94EGLfJ8dtlxN6KXLfCalNl5SzEPtHfe8T0hLAJnkJIURZ~xHMraqlzb8lRlItr~gCMYd3~91fPFhurdAMaeY58vi3KtYes4BUSo6DAHMR-Afvyl9lw69ipCcTcKkCLHvLZ0piY-whYEXvP9jqVN3jqKyMSGDJHOPjlZkP8y0ULw3wSgNdReD8sGbhlDcpJDKPuDlPQjAjwVar5qTfivS~HqSHMuAKWLT8nJCvdbMWTcoBPp-k8MS4ntjtkb-2eoj9R5Re0Ux5BCLlIvrg__&Key-Pair-Id=KMHN1LQ1HEUPL", 
-        image: "https://m.media-amazon.com/images/S/pv-target-images/df9d65a374a436b71648a8c844aa352a3d677a5436e362023af0e62bbb13a12e._BR-6_AC_SX720_FMwebp_.jpg",
-        runtime: "45 min",
-        rating: "9.0/10",
-        description: "An intruder attacks Sanctuary 573, forcing Eva above ground. Alone, she relies on her survival skills and a cryptic note labeled “WondLa.”",
-        director: "Tom Bancroft",
-        cast: "Jeanine Mason, Alan Tudyk, Brad Garrett"
-      },
-      { 
-        title: "Lifeforms", 
-        season: 1,
-        episode: 2,
-        year: 2024,
-        video: "https://scvo.baugherhatchp.sbs:443/v4/m9/vyvtf/index-f1-v1-a1.txt", 
-        image: "https://m.media-amazon.com/images/S/pv-target-images/c020719c46943c6ef124eba57d1e518c6a3264454c8f6bd876961ddf5b6f98b0._BR-6_AC_SX720_FMwebp_.jpg",
-        runtime: "45 min",
-        rating: "8.9/10",
-        description: "Eva discovers she’s on a planet called Orbona, where she meets a telepathic water bear named Otto and a surly alien named Rovender.",
-        director: "Tom Bancroft",
-        cast: "Jeanine Mason, Alan Tudyk, Gary Anthony Williams"
-      },
-      { 
-        title: "Bargain", 
-        season: 1,
-        episode: 3,
-        year: 2024,
-        video: "https://sj3l.feistjmyrodne.sbs:443/v4/ek/i9igk/index-f2-v1-a1.txt", 
-        image: "https://m.media-amazon.com/images/S/pv-target-images/4d15fe3179cc07df205c593d95785e3e04b93206058b95d39768e024972fad31._BR-6_AC_SX720_FMwebp_.jpg",
-        runtime: "45 min",
-        rating: "9.1/10",
-        description: "Eva discovers she’s on a planet called Orbona, where she meets a telepathic water bear named Otto and a surly alien named Rovender.",
-        director: "Tom Bancroft",
-        cast: "Jeanine Mason, Alan Tudyk, Gary Anthony Williams"
-      },
-      { 
-        title: "Ghosts", 
-        season: 1,
-        episode: 4,
-        year: 2024,
-        video: "https://sdqm.killionorellanacoelho.sbs/v4/m9/eke6o/index-f1-v1-a1.txt", 
-        image: "https://m.media-amazon.com/images/S/pv-target-images/b382da394b710a5c2ed31828a54ab07c9e6701f6ae9ca15ac974e5b4fb7f0feb._BR-6_AC_SX720_FMwebp_.jpg",
-        runtime: "45 min",
-        rating: "9.3/10",
-        description: "Eva visits a sage and learns a grim fact about humans. Undeterred, she doubles down on her quest as Besteel the bounty hunter closes in.",
-        director: "Tom Bancroft",
-        cast: "Jeanine Mason, Alan Tudyk, Brad Garrett"
-      },
-      { 
-        title: "Captive", 
-        season: 1,
-        episode: 5,
-        year: 2024,
-        video: "https://sdqm.yevettesha.sbs/v4/rw/msmbu/index-f1-v1-a1.txt", 
-        image: "https://m.media-amazon.com/images/S/pv-target-images/72d81aedd78ea05623001edef5d913934c3a0f0810a10aa081065eaeb98d85d7._BR-6_AC_SX720_FMwebp_.jpg",
-        runtime: "45 min",
-        rating: "9.2/10",
-        description: "Despite Muthr’s protests, Eva follows through on a daring plan and forms a friendship with an unlikely ally.",
-        director: "Tom Bancroft",
-        cast: "Jeanine Mason, Alan Tudyk, Gary Anthony Williams"
-      },
-      { 
-        title: "Bridge", 
-        season: 1,
-        episode: 6,
-        year: 2024,
-        video: "https://spuc.mcgaugheyjyiy.sbs/v4/vz/pdphc/index-f1-v1-a1.txt", 
-        image: "https://m.media-amazon.com/images/S/pv-target-images/2b457b89bad2479fc676314aa2a118cc20d378694df583cd8425416fd3f94f05._BR-6_AC_SX720_FMwebp_.jpg",
-        runtime: "45 min",
-        rating: "9.5/10",
-        description: "With a possible human civilization finally in sight, Eva and her friends face their most dangerous mission yet.",
-        director: "Tom Bancroft",
-        cast: "Jeanine Mason, Alan Tudyk, Brad Garrett, Gary Anthony Williams"
-      },
-      { 
-        title: "Ruins", 
-        season: 1,
-        episode: 7,
-        year: 2024,
-        video: "https://sskt.jungegdh.sbs/v4/m9/r3ro1/index-f1-v1-a1.txt", 
-        image: "https://m.media-amazon.com/images/S/pv-target-images/61f0b6d4931e212586f2a720f0cb38bba2e8a555fe8367f8defa8fc1b3175db6._BR-6_AC_SX720_FMwebp_.jpg",
-        runtime: "45 min",
-        rating: "9.5/10",
-        description: "In the season finale, Eva must rally both humans and aliens to defend Orbona against Queen Ojo's forces and uncover the ultimate secret of WondLa.",
-        director: "Tom Bancroft",
-        cast: "Jeanine Mason, Alan Tudyk, Brad Garrett, Gary Anthony Williams"
-      },
-      // Season 2
-      { 
-        title: "Home", 
-        season: 2,
-        episode: 1,
-        year: 2024,
-        video: "https://macdn.hakunaymatata.com/resource/305e7a8bb563a301da4d6aa572516e2e.mp4?Expires=1749632038&Signature=lAhWceWWaYmG6Zq1Of6yzyhQcWpj7YqBxMrdvc0GiIxSSgbwXwYjQxiqLl4Xscpqs~g89cxRvr6EB5azQHa6Mu4ba8oeweDpZWrVxv4naTX9ISHsDSFLcRgnHCn5jGy99em4veribG9C0llMEOTQ0mD9BuS970swmCaMk0-34h6YOOmnlqFfxzUPM6sxylNFfNc9SDAdn6LF-gpxBO-Pl6PprlmIRrNkPaFJc6eirB3Hi~t4FXzDXs5JB7fq2D3dF9m8XVk7RqWruDzz3MtXI0NDBIvsoQZFJ9n1scdw7Y6O686Fuqw2vU-yEeUcVKREoxzbBoGsJ3Tu57fQrDOwXA__&Key-Pair-Id=KMHN1LQ1HEUPL", 
-        image: "https://m.media-amazon.com/images/S/pv-target-images/eb96e99f73465d4fcc97a1f36139e8a6e96b36e6a6e18b69bd9cfb5d2df81c43._BR-6_AC_SX720_FMwebp_.jpg",
-        runtime: "45 min",
-        rating: "9.1/10",
-        description: "Eva arrives at the hidden city of New Attica, where she learns humans believe the worst about Orbona.",
-        director: "Tom Bancroft",
-        cast: "Jeanine Mason, Alan Tudyk, Brad Garrett"
-      },
-      { 
-        title: "Family", 
-        season: 2,
-        episode: 2,
-        year: 2024,
-        video: "https://macdn.hakunaymatata.com/resource/7ed86b8b6907b30b71d6e6b334379cab.mp4?Expires=1749631370&Signature=oYXV3TOkJbbF8ZCNnzfcqoi3zO-WZ6dU9CXZ6aDlgsmewePmM2~q~FSKO0IscQ20p~kseYKf8b~xr6a4occAoQhy3Vsxe35VYGSlzKn6MaN6wbL55XJbjwdIoMoPrYrUIilgzjkxGJBqShGejilPXNBV40rfrUj50olh4rOrWgM33RHchz2i-XGlDd4F~7KoxNZQwavQumre~oh2-CfvpGdBx0aDWjHfRf5nybqrgc1Ulzt-O~nMpVuIY5vUnylPB0Og2ayyw1o1zO3JyBHqW5~NTpQPeNLrWtdk0MuvgKhTPooyoovr1G8Rr0eSprIsPYQfAT3cGahmsV6u8NNuug__&Key-Pair-Id=KMHN1LQ1HEUPL", 
-        image: "https://m.media-amazon.com/images/S/pv-target-images/04f96a32c3055c7fe47d006191a936f222e8469c179a3809dcbd781437bd1344._BR-6_AC_SX720_FMwebp_.jpg",
-        runtime: "45 min",
-        rating: "9.0/10",
-        description: "Eva chases a mysterious figure deep into New Attica, leading to the discovery of a group of outsiders.",
-        director: "Tom Bancroft",
-        cast: "Jeanine Mason, Alan Tudyk, Gary Anthony Williams"
-      },
-      { 
-        title: "Discovery", 
-        season: 2,
-        episode: 3,
-        year: 2024,
-        video: "https://macdn.hakunaymatata.com/resource/606b02e0b7362f80192310444d69cfa4.mp4?Expires=1749630618&Signature=bbfEYCYoUFDmmBkKzuxRs1b0JWg6f2E1DyAgjDv3nyxcZcBlc2dq9-vSizMp832fmerRgjxeVi2-BRJ7n71UraNTo63NUtDFa8F0kUlyZAVHhEg8TDe3M4eEO4p5AsSkxILjlPhL4Pt4sWtLFUH~5KNn6gB1UI1Ew-vVFGuBKrnM4RjxQ2JZlbYyR69hjjXYTD96U00zYDZLV2S5942fauyG-nzeNlxvYjaj-Sjh6TxWQIDX-~DbKNNFkLwJLs-09q-88BPPYjgLZpMApt9-hB33QPtGrsT9FZlguszQ177D4N8hMbUbna5-dfkROf-iOlhf9cUdPOEaw8X7rgB3KQ__&Key-Pair-Id=KMHN1LQ1HEUPL", 
-        image: "https://m.media-amazon.com/images/S/pv-target-images/65f2cd89b134bde1fd10f26276b3c6715b89d8466baf56f2335a57a7b995c30d._BR-6_AC_SX720_FMwebp_.jpg",
-        runtime: "45 min",
-        rating: "9.2/10",
-        description: "Desperate to locate her friends, Eva is horrified to find them in the clutches of a sinister threat.",
-        director: "Tom Bancroft",
-        cast: "Jeanine Mason, Alan Tudyk, Gary Anthony Williams"
-      },
-      { 
-        title: "Lesson", 
-        season: 2,
-        episode: 4,
-        year: 2024,
-        video: "https://vgorigin.hakunaymatata.com/resource/085a88977c1a44be5223220cef54fad5.mp4?Expires=1749632090&KeyName=wefeed&Signature=y5ap68sI-ZrzpiUQQcUW5J6_zzdmuxBwciBrf7yYSD1OsmSAs9Dbg2OM8EJmWVg-5kJbaD6Ni6rDqjBKLweDDg", 
-        image: "https://m.media-amazon.com/images/S/pv-target-images/61acd7aa12a553dcb086c098619869df8483506d6ad4197cefd5c36ef6258cae._BR-6_AC_SX720_FMwebp_.jpg",
-        runtime: "45 min",
-        rating: "9.3/10",
-        description: "After a narrow escape, Eva, Eight, and Hailey trek the perilous wastelands to bring an injured Rovender home.",
-        director: "Tom Bancroft",
-        cast: "Jeanine Mason, Alan Tudyk, Brad Garrett"
-      },
-      { 
-        title: "Truth", 
-        season: 2,
-        episode: 5,
-        year: 2024,
-        video: "https://macdn.hakunaymatata.com/resource/455af0c81476b7af6a267fb657beafc1.mp4?Expires=1749632569&Signature=daQUe1JAvq~exqk1DagA95yVYHWFGUfjc5CPAWPm2yZAnFywyZmPboxaDsWe2jhi540JLQtErS~ejwx5UEhxsMkaeyxeFJfcV9OcMYibaqEHwLJYliwozBba1qmALeYvsy7kJv5FHUJ4QpfLNHG3UyJPkFbfxdZZvcrzsHQkl0Lale6lEdr02AOJRdoiYDApGwa-Dw92peeleA1Jg6BfU~69nayHdpbybGY8Jw5Y2Z6PKmcjrr~6TB1UmLaMPww-1ETtA6iXBFDukHfLzNGRFan78G225eH7GQBnMO6Nya-~00XfXl35~RhNltNvw3GzBTBNQOyW5PngxZxiSQ7cpg__&Key-Pair-Id=KMHN1LQ1HEUPL", 
-        image: "https://m.media-amazon.com/images/S/pv-target-images/3d203b94bb63b33b0de3a23f37cd252eead72728c14017d36c368ff08d290940._BR-6_AC_SX720_FMwebp_.jpg",
-        runtime: "45 min",
-        rating: "9.4/10",
-        description: "The Caeruleans refuse to let a dying Rovender back into their community. To save him, Eva seeks a mystical creature to restore his honor.",
-        director: "Tom Bancroft",
-        cast: "Jeanine Mason, Alan Tudyk, Brad Garrett, Gary Anthony Williams"
-      },
-      { 
-        title: "Connection", 
-        season: 2,
-        episode: 6,
-        year: 2024,
-        video: "https://macdn.hakunaymatata.com/resource/797f9570a258685a1382f4b8fcf7319d.mp4?Expires=1749629978&Signature=hEspdFzC4om6kIEghQdVBURJtUHsY5ZL6s5x9CSM4OZnQt3uROI2tRWFK-ykhe34tCJ6s3wdtGdfAxM-Fh3SI2Pc3UP0zzUStulyPMVyd2ULzf1-PwSLaOL0TkPk-TzS4hix-i2ced5HHyzF92Np~w~5~hhEzw02-Ooj6PGNxCdsHF1t5fqBi44d11s~MMmhwAbbzhq28BPa0bve3hyWtS~AvEtD7Y1sqklHAPlrvl4AD-OG7wNPxbphKzJk4XV~h~q9brEn6~xMLPOiuejL1gk8G9VteBcdTt-myrWOvW1zwJ7dlLQhswdjOnpvf8obxvL98vKwJKq68gVhGOYB7A__&Key-Pair-Id=KMHN1LQ1HEUPL", 
-        image: "https://m.media-amazon.com/images/S/pv-target-images/66bbac616dbaa6aba65ce3db7252cc348f94a236c271aace3855d91e67dd2416._BR-6_AC_SX720_FMwebp_.jpg",
-        runtime: "45 min",
-        rating: "9.6/10",
-        description: "During a Caerulean celebration, Eva connects with a powerful entity. Cadmus and his warbots bear down on Faunas.",
-        director: "Tom Bancroft",
-        cast: "Jeanine Mason, Alan Tudyk, Brad Garrett, Gary Anthony Williams"
-      },
-      { 
-        title: "Heart", 
-        season: 2,
-        episode: 7,
-        year: 2024,
-        video: "https://macdn.hakunaymatata.com/resource/bd041c95638968bb40425a066df9fdd6.mp4?Expires=1749633062&Signature=vYSCtfPw2xZtqOOAhaRPWyth8VsrRzy8hC3pm2GSK3IrWdYKRtYSk8ySbHbJ5UNSr6GEd-Zm1W2OiRS2QAiOuiGQ9KRYsFMKBwkMHi9m9yA0FiU~AvMLS00Tdjqxr6r0XSU5ZxdgIZqNq2XG7WPw~Tc0d-uMuVqfWOcCgIR2Swz3CXVTVJJ2hPGBhuyGvEPRCxbqxMKYz65wT3eOxpQvRZQ9c~q3S2PniL~EGhkKUpCHiA6UpOTVPff7i-NkNDSKTyb52aNDP4lkEiDnuVmMCtmmbOIeuyM7FZGfXgKlHEQZwl~UQkXjclnLjLL4wnk7APaeA3LQ5HW8gGkhRYbQYA__&Key-Pair-Id=KMHN1LQ1HEUPL", 
-        image: "https://m.media-amazon.com/images/S/pv-target-images/4957d82410ad8896a66c68260d9b8756434a43fd2db4a905acf2f1c7fe9dbecc._BR-6_AC_SX720_FMwebp_.jpg",
-        runtime: "45 min",
-        rating: "9.5/10",
-        description: "Season finale. Eva risks her life to protect the Heart of the Forest.",
-        director: "Tom Bancroft",
-        cast: "Jeanine Mason, Alan Tudyk, Brad Garrett, Gary Anthony Williams"
-      },
-    ];
+const movies = [
+  // --- SEASON 1 ---
+  { title:"Doors", season:1, episode:1, video:"https: VsmPquuJyvC1oa69o 58vi3KtYes4B lPQjAjwVar5qTfivS~H HEUPL", image:"https://m.media-amazon.com/images/S/pv-target-images/df9d65a374a436b71648a8c844aa352a3d677a5436e362023af0e62bbb13a12e._BR-6_AC_SX720_FMwebp_.jpg" },
 
-    const container = document.getElementById('episodes');
-    const playbackModal = document.getElementById('playback-modal');
-    const closeModal = document.getElementById('close-modal');
-    const modalVideo = document.getElementById('modal-video');
-    const modalTitle = document.getElementById('modal-title');
-    const modalDescription = document.getElementById('modal-description');
-    const episodeNum = document.getElementById('episode-num');
-    const seasonNum = document.getElementById('season-num');
+  { title:"Lifeforms", season:1, episode:2, video:"https://scvo.baugherhatchp.sbs:443/v4/m9/vyvtf/index-f1-v1-a1.txt", image:"https://m.media-amazon.com/images/S/pv-target-images/c020719c46943c6ef124eba57d1e518c6a3264454c8f6bd876961ddf5b6f98b0._BR-6_AC_SX720_FMwebp_.jpg" },
 
-    function isStream(url) {
-      return url.includes('.m3u8') || url.includes('.txt');
+  { title:"Bargain", season:1, episode:3, video:"https://sj3l.feistjmyrodne.sbs:443/v4/ek/i9igk/index-f2-v1-a1.txt", image:"https://m.media-amazon.com/images/S/pv-target-images/4d15fe3179cc07df205c593d95785e3e04b93206058b95d39768e024972fad31._BR-6_AC_SX720_FMwebp_.jpg" },
+
+  { title:"Ghosts", season:1, episode:4, video:"https://sdqm.killionorellanacoelho.sbs/v4/m9/eke6o/index-f1-v1-a1.txt", image:"https://m.media-amazon.com/images/S/pv-target-images/b382da394b710a5c2ed31828a54ab07c9e6701f6ae9ca15ac974e5b4fb7f0feb._BR-6_AC_SX720_FMwebp_.jpg" },
+
+  { title:"Captive", season:1, episode:5, video:"https://sdqm.yevettesha.sbs/v4/rw/msmbu/index-f1-v1-a1.txt", image:"https://m.media-amazon.com/images/S/pv-target-images/72d81aedd78ea05623001edef5d913934c3a0f0810a10aa081065eaeb98d85d7._BR-6_AC_SX720_FMwebp_.jpg" },
+
+  { title:"Bridge", season:1, episode:6, video:"https://spuc.mcgaugheyjyiy.sbs/v4/vz/pdphc/index-f1-v1-a1.txt", image:"https://m.media-amazon.com/images/S/pv-target-images/2b457b89bad2479fc676314aa2a118cc20d378694df583cd8425416fd3f94f05._BR-6_AC_SX720_FMwebp_.jpg" },
+
+  { title:"Ruins", season:1, episode:7, video:"https://sskt.jungegdh.sbs/v4/m9/r3ro1/index-f1-v1-a1.txt", image:"https://m.media-amazon.com/images/S/pv-target-images/61f0b6d4931e212586f2a720f0cb38bba2e8a555fe8367f8defa8fc1b3175db6._BR-6_AC_SX720_FMwebp_.jpg" },
+
+  // --- SEASON 2 ---
+  { title:"Home", season:2, episode:1, video:"https://m Q1HEUPL", image:"https://m.media-amazon.com/images/S/pv-target-images/eb96e99f73465d4fcc97a1f36139e8a6e96b36e6a6e18b69bd9cfb5d2df81c43._BR-6_AC_SX720_FMwebp_.jpg" },
+
+  { title:"Family", season:2, episode:2, video:"htt g2ayyw1o1zO3JyBHqW5~NTpQPeNLrWtdk0MuvgKhTPooyoovr1G8Rr0eSprIsPYQfAT3cGahmsV6u8NNuug__&Key-Pair-Id=KMHN1LQ1HEUPL", image:"https://m.media-amazon.com/images/S/pv-target-images/04f96a32c3055c7fe47d006191a936f222e8469c179a3809dcbd781437bd1344._BR-6_AC_SX720_FMwebp_.jpg" },
+
+  { title:"Discovery", season:2, episode:3, video:"htt rgB3KQ__&Key-Pair-Id=KMHN1LQ1HEUPL", image:"https://m.media-amazon.com/images/S/pv-target-images/65f2cd89b134bde1fd10f26276b3c6715b89d8466baf56f2335a57a7b995c30d._BR-6_AC_SX720_FMwebp_.jpg" },
+
+  { title:"Lesson", season:2, episode:4, video:"https:// 2090&KeyName=wef OM8EJmWVg-5kJbaD6Ni6rDqjBKLweDDg", image:"https://m.media-amazon.com/images/S/pv-target-images/61acd7aa12a553dcb086c098619869df8483506d6ad4197cefd5c36ef6258cae._BR-6_AC_SX720_FMwebp_.jpg" },
+
+  { title:"Truth", season:2, episode:5, video:"https:// EUPL", image:"https://m.media-amazon.com/images/S/pv-target-images/3d203b94bb63b33b0de3a23f37cd252eead72728c14017d36c368ff08d290940._BR-6_AC_SX720_FMwebp_.jpg" },
+
+  { title:"Connection", season:2, episode:6, video:"https://macdn.h HEUPL", image:"https://m.media-amazon.com/images/S/pv-target-images/66bbac616dbaa6aba65ce3db7252cc348f94a236c271aace3855d91e67dd2416._BR-6_AC_SX720_FMwebp_.jpg" },
+
+  { title:"Heart", season:2, episode:7, video:"https://macdn.haku HEUPL", image:"https://m.media-amazon.com/images/S/pv-target-images/4957d82410ad8896a66c68260d9b8756434a43fd2db4a905acf2f1c7fe9dbecc._BR-6_AC_SX720_FMwebp_.jpg" },
+];
+
+const container = document.getElementById('movies');
+const videoModal = document.getElementById('video-modal');
+const modalTitle = document.getElementById('modal-title');
+let currentHls = null;
+
+function showModal(){ videoModal.classList.remove('hidden'); document.body.style.overflow='hidden'; }
+function hideModal(){ videoModal.classList.add('hidden'); document.body.style.overflow=''; }
+
+function isHls(u){return u && (u.includes('.m3u8')||u.includes('index-')||/index.*\.txt/i.test(u));}
+function isMP4(u){return /\.mp4($|\?)/i.test(u);} 
+function isYouTube(u){return u && (u.includes('youtu')||u.includes('youtube.com'));}
+
+function playInModal(title, url){
+  if(currentHls){try{currentHls.destroy();}catch(e){}currentHls=null;}
+  const playerContainer = document.querySelector('.modal-player');
+  const modalVideo = document.getElementById('modal-video');
+  modalTitle.textContent = title||'';
+
+  if(url.includes('streamtape')) {
+    playerContainer.innerHTML = `<iframe src="${url}" width="100%" height="100%" allowfullscreen frameborder="0"></iframe>`;
+    showModal();
+    return;
+  }
+
+  if(isYouTube(url)){
+    playerContainer.innerHTML = `<iframe src="${url}?autoplay=1&rel=0" width="100%" height="100%" allowfullscreen frameborder="0"></iframe>`;
+    showModal();
+    return;
+  }
+
+  if(isHls(url)){
+    if(window.Hls && Hls.isSupported()){
+      currentHls = new Hls();
+      currentHls.loadSource(url);
+      currentHls.attachMedia(modalVideo);
+      currentHls.on(Hls.Events.MANIFEST_PARSED, ()=>{ showModal(); modalVideo.play().catch(()=>{}); });
+    } else {
+      modalVideo.src = url; showModal(); modalVideo.play().catch(()=>{});
     }
+    return;
+  }
 
-    function openModal(episode) {
-      modalTitle.textContent = episode.title;
-      modalDescription.textContent = episode.description;
-      episodeNum.textContent = episode.episode;
-      seasonNum.textContent = episode.season;
-      modalVideo.src = episode.video;
+  if(isMP4(url)){
+    modalVideo.src = url; showModal(); modalVideo.play().catch(()=>{});
+    return;
+  }
 
-      playbackModal.classList.remove('hidden');
-      document.body.style.overflow = 'hidden';
-      modalVideo.play();
-    }
+  window.location.href = `player.html?title=${encodeURIComponent(title)}&video=${encodeURIComponent(url)}`;
+}
 
-    function closeModalHandler() {
-      playbackModal.classList.add('hidden');
-      modalVideo.pause();
-      modalVideo.src = "";
-      document.body.style.overflow = '';
-    }
+function closePlayer(){
+  if(currentHls){try{currentHls.destroy();}catch(e){}currentHls=null;}
+  const playerContainer = document.querySelector('.modal-player');
+  playerContainer.innerHTML = `<video id="modal-video" controls playsinline preload="metadata"></video>`;
+  hideModal();
+}
 
-    closeModal.addEventListener('click', closeModalHandler);
+document.getElementById('close-video-modal').addEventListener('click', closePlayer);
+videoModal.addEventListener('click', e=>{ if(e.target===videoModal) closePlayer(); });
 
-    // Render episode cards
-    episodes.forEach((episode) => {
-      const card = document.createElement('div');
-      card.className = 'episode-card cursor-pointer bg-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition transform hover:-translate-y-1 relative';
-      card.innerHTML = `
-        <div class="relative">
-          <img src="${episode.image}" alt="${episode.title}" class="w-full h-48 md:h-56 object-cover">
-          <div class="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center opacity-0 transition">
-            <div class="play-icon absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-[#ff2d75] to-[#7e5bff] bg-opacity-90 rounded-full w-12 h-12 flex items-center justify-center opacity-0 transition">
-              <i class="fas fa-play text-white"></i>
-            </div>
-          </div>
-          <span class="absolute top-2 right-2 bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded">${episode.runtime}</span>
-          <span class="absolute top-2 left-2 bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded">S${episode.season}E${episode.episode}</span>
+function renderMovies(list){
+  container.innerHTML = '';
+  list.forEach(m=>{
+    const div = document.createElement('div');
+    div.className = 'movie-card rounded-lg overflow-hidden cursor-pointer';
+    div.innerHTML = `
+      <div class="relative">
+        <img src="${m.image}" alt="${m.title}" class="w-full h-60 object-cover">
+        <div class="absolute inset-0 flex items-end p-3 bg-gradient-to-t from-black/60">
+          <button class="bg-yellow-400 text-black px-3 py-1 rounded">Play</button>
         </div>
-        <div class="p-4">
-          <div class="flex justify-between items-start mb-1">
-            <h2 class="text-lg font-semibold">${episode.title}</h2>
-            <span class="text-purple-300 text-sm">${episode.rating}</span>
-          </div>
-          <p class="text-sm text-gray-400">Season ${episode.season} • Episode ${episode.episode}</p>
-        </div>
-      `;
-      card.addEventListener('click', () => {
-        if (isStream(episode.video)) {
-          const url = `player.html?title=${encodeURIComponent(episode.title)}&video=${encodeURIComponent(episode.video)}&index=${episode.episode}`;
-          window.location.href = url;
-        } else {
-          openModal(episode);
-        }
-      });
-      container.appendChild(card);
-    });
-  </script>
+      </div>
+      <div class="p-3">
+        <div class="font-semibold">${m.title}</div>
+        <div class="text-sm text-slate-400">Season ${m.season} • Episode ${m.episode}</div>
+      </div>`;
+    div.addEventListener('click', ()=> playInModal(m.title, m.video));
+    container.appendChild(div);
+  });
+}
+
+renderMovies(movies);
+
+// season filter
+const seasonBtns = document.querySelectorAll('.season-btn');
+seasonBtns.forEach(btn => btn.addEventListener('click', ()=>{
+  seasonBtns.forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const season = btn.dataset.season;
+  const filtered = season === 'all' ? movies : movies.filter(m => String(m.season) === String(season));
+  renderMovies(filtered);
+}));
+
+// search
+const searchInput = document.getElementById('search-input');
+searchInput && searchInput.addEventListener('input', (e)=>{
+  const q = e.target.value.trim().toLowerCase();
+  const activeSeasonBtn = document.querySelector('.season-btn.active');
+  const season = activeSeasonBtn ? activeSeasonBtn.dataset.season : 'all';
+  let list = season === 'all' ? movies : movies.filter(m=>String(m.season)===String(season));
+  if(q){ list = list.filter(m => m.title.toLowerCase().includes(q)); }
+  renderMovies(list);
+});
+</script>
 </body>
 </html>
